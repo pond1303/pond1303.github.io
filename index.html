@@ -21,55 +21,76 @@
             padding: 0;
             background-color: var(--bg-color);
             font-family: 'Jua', sans-serif;
+            
+            /* === 완벽한 중앙 정렬을 위한 설정 === */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            
+            /* 모바일 브라우저 주소창 고려하여 최소 높이 설정 */
+            min-height: 100vh; 
             overflow: hidden;
+            position: relative; /* 자식 요소 절대 위치 기준점 */
         }
 
-        /* === 물고기 헤엄치는 애니메이션 === */
+        /* === 물고기 애니메이션 === */
         @keyframes swim {
             from { background-position: 0 0; }
-            to { background-position: -80px 0; }
+            to { background-position: -160px 0; } /* 이동 거리 = 패턴 너비 */
         }
 
         /* === 배경 물고기 패턴 === */
         .deco-bar {
             position: absolute;
-            left: -10%; 
-            width: 120%; 
-            height: 15vh; 
+            left: 0;
+            width: 100%;
+            
+            /* [수정 1] 높이를 고정값(100px)으로 설정하여 중앙 공간 확보 */
+            height: 100px; 
+            
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='50' viewBox='0 0 80 50'%3E%3Cpath d='M75,25 C75,10 55,5 40,5 C20,5 5,15 5,25 C5,35 20,45 40,45 C55,45 75,40 75,25 Z M80,10 L70,25 L80,40 Z' fill='%23FFA500'/%3E%3C/svg%3E");
-            background-size: 80px 50px; 
+            
+            /* [수정 2] auto 100% -> 높이에 딱 맞춰서 물고기가 잘리지 않음 */
+            background-size: auto 100%; 
+            background-repeat: repeat-x; /* 가로로만 반복 */
+            
             opacity: 0.4;
             z-index: 0;
-            animation: swim 3s linear infinite;
+            
+            /* 자연스러운 반복을 위해 이동 거리에 맞춰 시간 조정 */
+            animation: swim 4s linear infinite;
         }
 
         .top { top: 0; }
-        .bottom { bottom: 0; transform: rotate(180deg); }
+        .bottom { 
+            bottom: 0; 
+            transform: rotate(180deg); /* 아래쪽은 뒤집기 */
+        }
 
         /* === 메인 컨텐츠 === */
         .container {
             text-align: center;
             width: 100%;
-            z-index: 1;
+            z-index: 10;
             position: relative;
+            
+            /* 위아래 바가 겹치지 않게 여백 확보 (선택 사항) */
+            padding: 20px 0;
         }
 
         h1 {
             color: var(--text-color);
             font-size: 3rem;
-            margin-bottom: 50px;
+            margin: 0 0 50px 0; /* 마진 정리 */
             text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            line-height: 1.2;
         }
 
         /* === 버튼 스타일 === */
         .copy-btn {
             width: 80%;
-            max-width: 500px;
+            max-width: 400px;
             padding: 20px 0;
             font-family: 'Jua', sans-serif;
             font-size: 1.8rem;
@@ -80,7 +101,11 @@
             cursor: pointer;
             box-shadow: 0 6px 0 var(--btn-shadow);
             transition: transform 0.1s, box-shadow 0.1s;
-            position: relative; /* 파티클 위치 기준점 */
+            position: relative;
+            
+            /* 텍스트 드래그 방지 */
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .copy-btn:active {
@@ -92,7 +117,7 @@
         #toast {
             visibility: hidden;
             min-width: 250px;
-            background-color: #333;
+            background-color: rgba(62, 39, 35, 0.95);
             color: #fff;
             text-align: center;
             border-radius: 50px;
@@ -105,35 +130,30 @@
             font-size: 1.2rem;
             opacity: 0;
             transition: opacity 0.5s, bottom 0.5s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         #toast.show {
             visibility: visible;
             opacity: 1;
-            bottom: 28vh; 
+            bottom: 120px; /* 버튼 위쪽으로 적당히 뜸 */
         }
 
-        /* === 팡! 터지는 파티클 스타일 === */
+        /* === 파티클 스타일 === */
         .particle {
             position: fixed;
-            width: 15px;
-            height: 15px;
             border-radius: 50%;
-            pointer-events: none; /* 클릭 방해 안 함 */
+            pointer-events: none;
             z-index: 9999;
-            /* 애니메이션 실행 */
             animation: pop 0.8s ease-out forwards;
         }
 
-        /* 파티클이 퍼지는 동작 */
         @keyframes pop {
             0% {
                 transform: translate(0, 0) scale(1);
                 opacity: 1;
             }
             100% {
-                /* 자바스크립트에서 계산한 x, y 값으로 이동 */
                 transform: translate(var(--x), var(--y)) scale(0);
                 opacity: 0;
             }
@@ -151,16 +171,16 @@
     
     <div class="deco-bar bottom"></div>
 
-    <div id="toast">복사 되었습니다</div>
+    <div id="toast">복사 되었습니다 🐟</div>
 
     <script>
         function copyAccount(e) {
             const accountNumber = '농협 217063-5207-4455';
 
-            // 1. 파티클 효과 실행
+            // 파티클 생성
             createParticles(e.clientX, e.clientY);
 
-            // 2. 클립보드 복사
+            // 복사 로직
             navigator.clipboard.writeText(accountNumber).then(() => {
                 showToast();
             }).catch(err => {
@@ -169,38 +189,34 @@
             });
         }
 
-        // 파티클 생성 함수
         function createParticles(x, y) {
-            const particleCount = 30; // 터지는 알갱이 개수
-            const colors = ['#FFA500', '#D84315', '#FFD54F', '#FFFFFF', '#FFCCBC']; // 붕어빵 색깔들
+            const particleCount = 40; // 파티클 개수 늘림
+            const colors = ['#FFA500', '#FF7043', '#FFD54F', '#FFFFFF', '#8D6E63'];
 
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                // 랜덤 크기 설정 (5px ~ 15px 사이)
-                const size = Math.floor(Math.random() * 10 + 5); 
+                
+                // [수정] 크기 랜덤 설정 (4px ~ 12px)
+                const size = Math.random() * 8 + 4;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-                // 랜덤한 색상 적용
+
                 particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                // 파티클 시작 위치
                 particle.style.left = `${x}px`;
                 particle.style.top = `${y}px`;
 
-                // 랜덤한 방향과 거리 계산
-                const angle = Math.random() * Math.PI * 2; // 360도 랜덤
-                const velocity = 60 + Math.random() * 60;  // 퍼지는 거리 (60~120px)
+                // 퍼지는 각도와 거리 계산
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 50 + Math.random() * 100; // 더 멀리 퍼지게
                 const tx = Math.cos(angle) * velocity;
                 const ty = Math.sin(angle) * velocity;
 
-                // CSS 변수에 이동할 거리 전달
                 particle.style.setProperty('--x', `${tx}px`);
                 particle.style.setProperty('--y', `${ty}px`);
 
                 document.body.appendChild(particle);
 
-                // 애니메이션 끝나면 요소 삭제 (메모리 관리)
                 setTimeout(() => {
                     particle.remove();
                 }, 800);
