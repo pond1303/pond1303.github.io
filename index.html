@@ -4,85 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>붕神 계좌 번호</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
-
     <style>
         :root {
-            --bg-color: #FDF5E6;     /* 따뜻한 베이지색 배경 */
-            --point-color: #FFA500;  /* 붕어빵 주황색 */
-            --text-color: #5D4037;   /* 짙은 갈색 텍스트 */
-            --btn-bg: #D84315;       /* 버튼: 붉은 갈색 (팥앙금 색) */
-            --btn-shadow: #870000;   /* 버튼 그림자 */
+            --bg-color: #FDF5E6;     /* 배경색: 따뜻한 베이지 */
+            --check-color: #D84315;  /* 체크무늬: 진한 주황색 (요청 반영) */
+            --check-size: 70px;      /* 체크무늬 크기: 더 크게 (요청 반영) */
         }
 
         body {
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
-            font-family: 'Jua', sans-serif; /* 폰트 적용 */
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            justify-content: center;
+            overflow: hidden; /* 스크롤 방지 */
+            font-family: sans-serif;
         }
 
-        /* 상단/하단 체크무늬 장식 (이미지 스타일 반영) */
-        .deco-bar {
+        /* === 상단/하단 체크무늬 패턴 (CSS로 구현) === */
+        .pattern-bar {
             position: absolute;
             left: 0;
             width: 100%;
-            height: 40px;
-            background-image: linear-gradient(90deg, var(--point-color) 50%, transparent 50%),
-                              linear-gradient(var(--point-color) 50%, transparent 50%);
-            background-size: 40px 40px;
-            opacity: 0.6;
+            height: var(--check-size); /* 패턴 높이 */
+            
+            /* 체크무늬 생성 로직 */
+            background-image: 
+                linear-gradient(90deg, var(--check-color) 50%, transparent 50%),
+                linear-gradient(var(--check-color) 50%, transparent 50%);
+            background-size: var(--check-size) var(--check-size);
+            opacity: 0.9;
         }
+
         .top { top: 0; }
         .bottom { bottom: 0; }
 
-        /* 메인 컨텐츠 영역 */
+        /* === 메인 컨텐츠 (로고 + 버튼) === */
         .container {
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px; /* 로고와 버튼 사이 간격 */
             width: 100%;
-            z-index: 1;
+            z-index: 1; /* 패턴 위에 올라오도록 설정 */
         }
 
-        h1 {
-            color: var(--text-color);
-            font-size: 3rem;
-            margin-bottom: 50px;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+        /* 로고 이미지 스타일 */
+        .logo-img {
+            width: 180px; /* 로고 크기 조절 */
+            max-width: 40%;
+            height: auto;
+            border-radius: 50%; /* 로고가 원형이라면 깔끔하게 */
+            /* 약간의 그림자 (선택사항) */
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
 
-        /* 80% 너비 버튼 스타일 */
-        .copy-btn {
-            width: 80%;
+        /* 버튼 이미지 스타일 */
+        .btn-img {
+            width: 80%;       /* 화면 너비의 80% */
             max-width: 500px; /* 너무 커지지 않게 제한 */
-            padding: 20px 0;
-            font-family: 'Jua', sans-serif;
-            font-size: 1.8rem;
-            color: white;
-            background-color: var(--btn-bg);
-            border: none;
-            border-radius: 15px;
             cursor: pointer;
-            box-shadow: 0 6px 0 var(--btn-shadow);
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: transform 0.1s;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
 
-        .copy-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 var(--btn-shadow);
+        .btn-img:active {
+            transform: scale(0.96); /* 클릭 시 살짝 눌리는 효과 */
         }
 
-        /* 토스트 메시지 스타일 */
+        /* === 토스트 메시지 스타일 === */
         #toast {
             visibility: hidden;
             min-width: 250px;
-            background-color: #333;
+            background-color: rgba(50, 30, 20, 0.9); /* 진한 갈색 배경 */
             color: #fff;
             text-align: center;
             border-radius: 50px;
@@ -90,58 +87,56 @@
             position: fixed;
             z-index: 100;
             left: 50%;
-            bottom: 30px;
+            bottom: calc(var(--check-size) + 20px); /* 하단 패턴보다 위에 뜨도록 */
             transform: translateX(-50%);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
             opacity: 0;
             transition: opacity 0.5s, bottom 0.5s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         #toast.show {
             visibility: visible;
             opacity: 1;
-            bottom: 80px; /* 살짝 위로 떠오르는 효과 */
+            bottom: calc(var(--check-size) + 50px); /* 살짝 위로 떠오르는 효과 */
         }
     </style>
 </head>
 <body>
 
-    <div class="deco-bar top"></div>
+    <div class="pattern-bar top"></div>
 
     <div class="container">
-        <h1>붕神 계좌 번호</h1>
-        <button class="copy-btn" onclick="copyAccount()">계좌 번호 복사하기</button>
+        <img src="logo.png" alt="붕神 로고" class="logo-img">
+        
+        <img src="button.png" alt="계좌 복사 버튼" class="btn-img" onclick="copyAccount()">
     </div>
-    
-    <div class="deco-bar bottom"></div>
 
-    <div id="toast">복사 되었습니다</div>
+    <div class="pattern-bar bottom"></div>
+
+    <div id="toast">계좌번호가 복사되었습니다!</div>
 
     <script>
         function copyAccount() {
             const accountNumber = '국민 27410104216982';
 
-            // 클립보드 복사
             navigator.clipboard.writeText(accountNumber).then(() => {
                 showToast();
             }).catch(err => {
                 console.error('복사 실패:', err);
-                alert('복사에 실패했습니다. 직접 복사해주세요.\n' + accountNumber);
+                alert('복사 실패! 직접 복사해주세요: ' + accountNumber);
             });
         }
 
         function showToast() {
             const toast = document.getElementById("toast");
-            
-            // 토스트 보이기 클래스 추가
             toast.className = "show";
-
-            // 3초 후 토스트 사라지게 함
             setTimeout(function(){ 
                 toast.className = toast.className.replace("show", ""); 
-            }, 3000);
+            }, 2500);
         }
     </script>
+
 </body>
 </html>
