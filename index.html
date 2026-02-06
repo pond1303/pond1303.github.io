@@ -40,7 +40,7 @@
             position: absolute;
             left: -10%; 
             width: 120%; 
-            height: 25vh; 
+            height: 15vh; 
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='50' viewBox='0 0 80 50'%3E%3Cpath d='M75,25 C75,10 55,5 40,5 C20,5 5,15 5,25 C5,35 20,45 40,45 C55,45 75,40 75,25 Z M80,10 L70,25 L80,40 Z' fill='%23FFA500'/%3E%3C/svg%3E");
             background-size: 80px 50px; 
             opacity: 0.4;
@@ -117,8 +117,8 @@
         /* === 팡! 터지는 파티클 스타일 === */
         .particle {
             position: fixed;
-            width: 8px;
-            height: 8px;
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
             pointer-events: none; /* 클릭 방해 안 함 */
             z-index: 9999;
@@ -177,7 +177,10 @@
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                
+                // 랜덤 크기 설정 (5px ~ 15px 사이)
+                const size = Math.floor(Math.random() * 10 + 5); 
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
                 // 랜덤한 색상 적용
                 particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 
