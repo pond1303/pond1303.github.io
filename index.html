@@ -8,29 +8,79 @@
         body {
             margin: 0;
             padding: 0;
+            background-color: #FDF5E6; /* 기본 배경색 */
+            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100vh;
-            width: 100vw;
-            
-            /* 배경 설정 */
-            background-image: url('background.png');
-            background-size: cover;      /* 화면 꽉 차게 (비율 유지) */
-            background-position: center; /* 중앙 정렬 */
-            background-repeat: no-repeat;
-            
-            /* 어디를 눌러도 된다는 느낌을 주는 커서 */
-            cursor: pointer;
-            
-            /* 텍스트 드래그 방지 (앱처럼 보이게) */
-            user-select: none;
-            -webkit-user-select: none;
-            overflow: hidden; /* 스크롤 방지 */
         }
 
-        /* 토스트 메시지 스타일 */
+        /* 1. 배경 이미지 (상단 패턴 반복) */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px; /* 패턴 높이 */
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.8;
+            z-index: -1;
+        }
+        
+        /* 하단에도 패턴 배치 */
+        .bg-pattern.bottom {
+            top: auto;
+            bottom: 0;
+            transform: rotate(180deg); /* 뒤집어서 사용 */
+        }
+
+        /* 2. 로고 이미지 */
+        .logo {
+            width: 150px; /* 로고 크기 조절 */
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 50%; /* 이미지를 원형으로 보이게 함 */
+        }
+
+        h1 {
+            color: #5D4037;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            text-align: center;
+        }
+
+        /* 3. 버튼 이미지 */
+        .img-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            width: 80%; /* 화면의 80% 채우기 */
+            max-width: 500px;
+            transition: transform 0.1s;
+        }
+
+        .img-btn img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 15px; /* 이미지 모서리가 둥글다면 맞춰줌 */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .img-btn:active {
+            transform: scale(0.98); /* 클릭 시 살짝 눌리는 효과 */
+        }
+
+        /* 토스트 메시지 */
         #toast {
             visibility: hidden;
             min-width: 250px;
-            background-color: rgba(0, 0, 0, 0.8); /* 약간 투명한 검정 */
+            background-color: #333;
             color: #fff;
             text-align: center;
             border-radius: 50px;
@@ -38,58 +88,51 @@
             position: fixed;
             z-index: 100;
             left: 50%;
-            bottom: 50px;
+            bottom: 30px;
             transform: translateX(-50%);
-            font-size: 1.2rem;
-            font-family: sans-serif;
+            font-size: 1.1rem;
             opacity: 0;
             transition: opacity 0.5s, bottom 0.5s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         #toast.show {
             visibility: visible;
             opacity: 1;
-            bottom: 80px; /* 살짝 위로 떠오르는 효과 */
+            bottom: 50px;
         }
     </style>
 </head>
 <body>
 
+    <div class="bg-pattern"></div>
+    <div class="bg-pattern bottom"></div>
+
+    <img src="logo.png" alt="붕신 로고" class="logo">
+
+    <h1>붕神 계좌 번호</h1>
+
+    <button class="img-btn" onclick="copyAccount()">
+        <img src="button.png" alt="계좌 번호 복사하기">
+    </button>
+
     <div id="toast">복사 되었습니다</div>
 
     <script>
-        // 화면 전체에 클릭 이벤트 리스너 추가
-        document.body.addEventListener('click', function() {
-            copyAccount();
-        });
-
         function copyAccount() {
             const accountNumber = '국민 27410104216982';
 
-            // 클립보드 복사
             navigator.clipboard.writeText(accountNumber).then(() => {
                 showToast();
             }).catch(err => {
                 console.error('복사 실패:', err);
-                // 보안상 이유로 자동 복사가 막힌 경우 대비 (오래된 브라우저 등)
-                prompt("이 계좌번호를 복사하세요:", accountNumber);
+                alert('복사 실패! 직접 복사해주세요: ' + accountNumber);
             });
         }
 
-        let isToastShown = false; // 토스트 중복 실행 방지 플래그
-
         function showToast() {
-            if (isToastShown) return;
-            
-            isToastShown = true;
             const toast = document.getElementById("toast");
             toast.className = "show";
-
-            setTimeout(function(){ 
-                toast.className = toast.className.replace("show", ""); 
-                isToastShown = false;
-            }, 2000); // 2초 뒤 사라짐
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
         }
     </script>
 
