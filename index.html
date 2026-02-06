@@ -4,79 +4,81 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>붕神 계좌 번호</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --bg-color: #FDF5E6;     /* 따뜻한 베이지색 배경 */
+            --point-color: #FFA500;  /* 붕어빵 주황색 */
+            --text-color: #5D4037;   /* 짙은 갈색 텍스트 */
+            --btn-bg: #D84315;       /* 버튼: 붉은 갈색 (팥앙금 색) */
+            --btn-shadow: #870000;   /* 버튼 그림자 */
+        }
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #FDF5E6; /* 기본 배경색 */
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+            background-color: var(--bg-color);
+            font-family: 'Jua', sans-serif; /* 폰트 적용 */
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* 1. 배경 이미지 (상단 패턴 반복) */
-        .bg-pattern {
+        /* 상단/하단 체크무늬 장식 (이미지 스타일 반영) */
+        .deco-bar {
             position: absolute;
-            top: 0;
             left: 0;
             width: 100%;
-            height: 100px; /* 패턴 높이 */
-            background-image: url('background.png');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.8;
-            z-index: -1;
+            height: 40px;
+            background-image: linear-gradient(90deg, var(--point-color) 50%, transparent 50%),
+                              linear-gradient(var(--point-color) 50%, transparent 50%);
+            background-size: 40px 40px;
+            opacity: 0.6;
         }
-        
-        /* 하단에도 패턴 배치 */
-        .bg-pattern.bottom {
-            top: auto;
-            bottom: 0;
-            transform: rotate(180deg); /* 뒤집어서 사용 */
-        }
+        .top { top: 0; }
+        .bottom { bottom: 0; }
 
-        /* 2. 로고 이미지 */
-        .logo {
-            width: 150px; /* 로고 크기 조절 */
-            height: auto;
-            margin-bottom: 20px;
-            border-radius: 50%; /* 이미지를 원형으로 보이게 함 */
+        /* 메인 컨텐츠 영역 */
+        .container {
+            text-align: center;
+            width: 100%;
+            z-index: 1;
         }
 
         h1 {
-            color: #5D4037;
-            margin-bottom: 40px;
-            font-size: 2.5rem;
-            text-align: center;
+            color: var(--text-color);
+            font-size: 3rem;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
         }
 
-        /* 3. 버튼 이미지 */
-        .img-btn {
-            background: none;
+        /* 80% 너비 버튼 스타일 */
+        .copy-btn {
+            width: 80%;
+            max-width: 500px; /* 너무 커지지 않게 제한 */
+            padding: 20px 0;
+            font-family: 'Jua', sans-serif;
+            font-size: 1.8rem;
+            color: white;
+            background-color: var(--btn-bg);
             border: none;
-            padding: 0;
+            border-radius: 15px;
             cursor: pointer;
-            width: 80%; /* 화면의 80% 채우기 */
-            max-width: 500px;
-            transition: transform 0.1s;
+            box-shadow: 0 6px 0 var(--btn-shadow);
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
-        .img-btn img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border-radius: 15px; /* 이미지 모서리가 둥글다면 맞춰줌 */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .copy-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--btn-shadow);
         }
 
-        .img-btn:active {
-            transform: scale(0.98); /* 클릭 시 살짝 눌리는 효과 */
-        }
-
-        /* 토스트 메시지 */
+        /* 토스트 메시지 스타일 */
         #toast {
             visibility: hidden;
             min-width: 250px;
@@ -90,30 +92,29 @@
             left: 50%;
             bottom: 30px;
             transform: translateX(-50%);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             opacity: 0;
             transition: opacity 0.5s, bottom 0.5s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         #toast.show {
             visibility: visible;
             opacity: 1;
-            bottom: 50px;
+            bottom: 80px; /* 살짝 위로 떠오르는 효과 */
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-pattern"></div>
-    <div class="bg-pattern bottom"></div>
+    <div class="deco-bar top"></div>
 
-    <img src="logo.png" alt="붕신 로고" class="logo">
-
-    <h1>붕神 계좌 번호</h1>
-
-    <button class="img-btn" onclick="copyAccount()">
-        <img src="button.png" alt="계좌 번호 복사하기">
-    </button>
+    <div class="container">
+        <h1>붕神 계좌 번호</h1>
+        <button class="copy-btn" onclick="copyAccount()">계좌 번호 복사하기</button>
+    </div>
+    
+    <div class="deco-bar bottom"></div>
 
     <div id="toast">복사 되었습니다</div>
 
@@ -121,20 +122,26 @@
         function copyAccount() {
             const accountNumber = '국민 27410104216982';
 
+            // 클립보드 복사
             navigator.clipboard.writeText(accountNumber).then(() => {
                 showToast();
             }).catch(err => {
                 console.error('복사 실패:', err);
-                alert('복사 실패! 직접 복사해주세요: ' + accountNumber);
+                alert('복사에 실패했습니다. 직접 복사해주세요.\n' + accountNumber);
             });
         }
 
         function showToast() {
             const toast = document.getElementById("toast");
+            
+            // 토스트 보이기 클래스 추가
             toast.className = "show";
-            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+
+            // 3초 후 토스트 사라지게 함
+            setTimeout(function(){ 
+                toast.className = toast.className.replace("show", ""); 
+            }, 3000);
         }
     </script>
-
 </body>
 </html>
