@@ -21,68 +21,78 @@
             padding: 0;
             background-color: var(--bg-color);
             font-family: 'Jua', sans-serif;
-            
-            /* === 완벽한 중앙 정렬을 위한 설정 === */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            
-            /* 모바일 브라우저 주소창 고려하여 최소 높이 설정 */
-            min-height: 100vh; 
+            min-height: 100vh;
             overflow: hidden;
-            position: relative; /* 자식 요소 절대 위치 기준점 */
+            position: relative;
         }
 
-        /* === 물고기 애니메이션 === */
+        /* === 물고기 이동 애니메이션 (왼쪽으로) === */
         @keyframes swim {
             from { background-position: 0 0; }
-            to { background-position: -160px 0; } /* 이동 거리 = 패턴 너비 */
+            /* 물고기 너비(160px)만큼 이동해야 자연스럽게 이어짐 */
+            to { background-position: -160px 0; }
         }
 
-        /* === 배경 물고기 패턴 === */
+        /* === 배경 물고기 컨테이너 === */
         .deco-bar {
             position: absolute;
             left: 0;
             width: 100%;
-            
-            /* [수정 1] 높이를 고정값(100px)으로 설정하여 중앙 공간 확보 */
+            /* [수정] 100px짜리 2줄이므로 전체 높이 200px */
+            height: 200px; 
+            z-index: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* === 물고기 공통 스타일 === */
+        .fish-row {
+            width: 100%;
+            /* [수정] 물고기 한 마리 높이를 100px로 확대 */
             height: 100px; 
             
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='50' viewBox='0 0 80 50'%3E%3Cpath d='M75,25 C75,10 55,5 40,5 C20,5 5,15 5,25 C5,35 20,45 40,45 C55,45 75,40 75,25 Z M80,10 L70,25 L80,40 Z' fill='%23FFA500'/%3E%3C/svg%3E");
             
-            /* [수정 2] auto 100% -> 높이에 딱 맞춰서 물고기가 잘리지 않음 */
-            background-size: auto 100%; 
-            background-repeat: repeat-x; /* 가로로만 반복 */
-            
-            opacity: 0.4;
-            z-index: 0;
-            
-            /* 자연스러운 반복을 위해 이동 거리에 맞춰 시간 조정 */
+            /* [수정] 높이 100px에 맞춰 비율 유지 (너비는 약 160px 됨) */
+            background-size: auto 100%;
+            background-repeat: repeat-x;
+            opacity: 0.5;
+        }
+
+        /* 첫 번째 줄 */
+        .fish-row.line-1 {
             animation: swim 4s linear infinite;
+        }
+
+        /* 두 번째 줄 (같은 방향이지만 속도/투명도 차이) */
+        .fish-row.line-2 {
+            opacity: 0.3; 
+            /* 속도를 조금 느리게 해서 층이 다른 느낌을 줌 */
+            animation: swim 6s linear infinite; 
         }
 
         .top { top: 0; }
         .bottom { 
-            bottom: 0; 
-            transform: rotate(180deg); /* 아래쪽은 뒤집기 */
+            bottom: 0;  /* 화면 맨 아래 고정 */
+            transform: rotate(180deg); /* 180도 회전 (뒤집기) */
         }
-
         /* === 메인 컨텐츠 === */
         .container {
             text-align: center;
             width: 100%;
-            z-index: 10;
+            z-index: 10; /* 물고기보다 위에 뜨도록 */
             position: relative;
-            
-            /* 위아래 바가 겹치지 않게 여백 확보 (선택 사항) */
             padding: 20px 0;
         }
 
         h1 {
             color: var(--text-color);
             font-size: 3rem;
-            margin: 0 0 50px 0; /* 마진 정리 */
+            margin: 0 0 50px 0;
             text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
             line-height: 1.2;
         }
@@ -102,8 +112,6 @@
             box-shadow: 0 6px 0 var(--btn-shadow);
             transition: transform 0.1s, box-shadow 0.1s;
             position: relative;
-            
-            /* 텍스트 드래그 방지 */
             user-select: none;
             -webkit-user-select: none;
         }
@@ -136,7 +144,7 @@
         #toast.show {
             visibility: visible;
             opacity: 1;
-            bottom: 120px; /* 버튼 위쪽으로 적당히 뜸 */
+            bottom: 120px;
         }
 
         /* === 파티클 스타일 === */
@@ -149,27 +157,27 @@
         }
 
         @keyframes pop {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(var(--x), var(--y)) scale(0);
-                opacity: 0;
-            }
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="deco-bar top"></div>
+    <div class="deco-bar top">
+        <div class="fish-row line-1"></div>
+        <div class="fish-row line-2"></div>
+    </div>
 
     <div class="container">
         <h1>붕神 계좌 번호</h1>
         <button class="copy-btn" onclick="copyAccount(event)">계좌 번호 복사하기</button>
     </div>
     
-    <div class="deco-bar bottom"></div>
+    <div class="deco-bar bottom">
+        <div class="fish-row line-1"></div>
+        <div class="fish-row line-2"></div>
+    </div>
 
     <div id="toast">복사 되었습니다 🐟</div>
 
@@ -177,10 +185,8 @@
         function copyAccount(e) {
             const accountNumber = '농협 217063-5207-4455';
 
-            // 파티클 생성
             createParticles(e.clientX, e.clientY);
 
-            // 복사 로직
             navigator.clipboard.writeText(accountNumber).then(() => {
                 showToast();
             }).catch(err => {
@@ -190,14 +196,13 @@
         }
 
         function createParticles(x, y) {
-            const particleCount = 40; // 파티클 개수 늘림
+            const particleCount = 40;
             const colors = ['#FFA500', '#FF7043', '#FFD54F', '#FFFFFF', '#8D6E63'];
 
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
                 
-                // [수정] 크기 랜덤 설정 (4px ~ 12px)
                 const size = Math.random() * 8 + 4;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
@@ -206,9 +211,8 @@
                 particle.style.left = `${x}px`;
                 particle.style.top = `${y}px`;
 
-                // 퍼지는 각도와 거리 계산
                 const angle = Math.random() * Math.PI * 2;
-                const velocity = 50 + Math.random() * 100; // 더 멀리 퍼지게
+                const velocity = 50 + Math.random() * 100;
                 const tx = Math.cos(angle) * velocity;
                 const ty = Math.sin(angle) * velocity;
 
@@ -217,9 +221,7 @@
 
                 document.body.appendChild(particle);
 
-                setTimeout(() => {
-                    particle.remove();
-                }, 800);
+                setTimeout(() => { particle.remove(); }, 800);
             }
         }
 
