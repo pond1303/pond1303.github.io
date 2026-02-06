@@ -4,85 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>붕神 계좌 번호</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
-
     <style>
-        :root {
-            --bg-color: #FDF5E6;     /* 따뜻한 베이지색 배경 */
-            --point-color: #FFA500;  /* 붕어빵 주황색 */
-            --text-color: #5D4037;   /* 짙은 갈색 텍스트 */
-            --btn-bg: #D84315;       /* 버튼: 붉은 갈색 (팥앙금 색) */
-            --btn-shadow: #870000;   /* 버튼 그림자 */
-        }
-
         body {
             margin: 0;
             padding: 0;
-            background-color: var(--bg-color);
-            font-family: 'Jua', sans-serif; /* 폰트 적용 */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
-            overflow: hidden;
-        }
-
-        /* 상단/하단 체크무늬 장식 (이미지 스타일 반영) */
-        .deco-bar {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            background-image: linear-gradient(90deg, var(--point-color) 50%, transparent 50%),
-                              linear-gradient(var(--point-color) 50%, transparent 50%);
-            background-size: 40px 40px;
-            opacity: 0.6;
-        }
-        .top { top: 0; }
-        .bottom { bottom: 0; }
-
-        /* 메인 컨텐츠 영역 */
-        .container {
-            text-align: center;
-            width: 100%;
-            z-index: 1;
-        }
-
-        h1 {
-            color: var(--text-color);
-            font-size: 3rem;
-            margin-bottom: 50px;
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
-        }
-
-        /* 80% 너비 버튼 스타일 */
-        .copy-btn {
-            width: 80%;
-            max-width: 500px; /* 너무 커지지 않게 제한 */
-            padding: 20px 0;
-            font-family: 'Jua', sans-serif;
-            font-size: 1.8rem;
-            color: white;
-            background-color: var(--btn-bg);
-            border: none;
-            border-radius: 15px;
+            width: 100vw;
+            
+            /* 배경 설정 */
+            background-image: url('background.png');
+            background-size: cover;      /* 화면 꽉 차게 (비율 유지) */
+            background-position: center; /* 중앙 정렬 */
+            background-repeat: no-repeat;
+            
+            /* 어디를 눌러도 된다는 느낌을 주는 커서 */
             cursor: pointer;
-            box-shadow: 0 6px 0 var(--btn-shadow);
-            transition: transform 0.1s, box-shadow 0.1s;
-        }
-
-        .copy-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 var(--btn-shadow);
+            
+            /* 텍스트 드래그 방지 (앱처럼 보이게) */
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden; /* 스크롤 방지 */
         }
 
         /* 토스트 메시지 스타일 */
         #toast {
             visibility: hidden;
             min-width: 250px;
-            background-color: #333;
+            background-color: rgba(0, 0, 0, 0.8); /* 약간 투명한 검정 */
             color: #fff;
             text-align: center;
             border-radius: 50px;
@@ -90,12 +38,13 @@
             position: fixed;
             z-index: 100;
             left: 50%;
-            bottom: 30px;
+            bottom: 50px;
             transform: translateX(-50%);
             font-size: 1.2rem;
+            font-family: sans-serif;
             opacity: 0;
             transition: opacity 0.5s, bottom 0.5s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         #toast.show {
@@ -107,18 +56,14 @@
 </head>
 <body>
 
-    <div class="deco-bar top"></div>
-
-    <div class="container">
-        <h1>붕神 계좌 번호</h1>
-        <button class="copy-btn" onclick="copyAccount()">계좌 번호 복사하기</button>
-    </div>
-    
-    <div class="deco-bar bottom"></div>
-
     <div id="toast">복사 되었습니다</div>
 
     <script>
+        // 화면 전체에 클릭 이벤트 리스너 추가
+        document.body.addEventListener('click', function() {
+            copyAccount();
+        });
+
         function copyAccount() {
             const accountNumber = '국민 27410104216982';
 
@@ -127,21 +72,26 @@
                 showToast();
             }).catch(err => {
                 console.error('복사 실패:', err);
-                alert('복사에 실패했습니다. 직접 복사해주세요.\n' + accountNumber);
+                // 보안상 이유로 자동 복사가 막힌 경우 대비 (오래된 브라우저 등)
+                prompt("이 계좌번호를 복사하세요:", accountNumber);
             });
         }
 
+        let isToastShown = false; // 토스트 중복 실행 방지 플래그
+
         function showToast() {
-            const toast = document.getElementById("toast");
+            if (isToastShown) return;
             
-            // 토스트 보이기 클래스 추가
+            isToastShown = true;
+            const toast = document.getElementById("toast");
             toast.className = "show";
 
-            // 3초 후 토스트 사라지게 함
             setTimeout(function(){ 
                 toast.className = toast.className.replace("show", ""); 
-            }, 3000);
+                isToastShown = false;
+            }, 2000); // 2초 뒤 사라짐
         }
     </script>
+
 </body>
 </html>
