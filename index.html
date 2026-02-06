@@ -12,7 +12,7 @@
             --bg-color: #FDF5E6;     /* 따뜻한 베이지색 배경 */
             --point-color: #FFA500;  /* 붕어빵 주황색 */
             --text-color: #5D4037;   /* 짙은 갈색 텍스트 */
-            --btn-bg: #D84315;       /* 버튼: 붉은 갈색 (팥앙금 색) */
+            --btn-bg: #D84315;       /* 버튼: 붉은 갈색 */
             --btn-shadow: #870000;   /* 버튼 그림자 */
         }
 
@@ -20,7 +20,7 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
-            font-family: 'Jua', sans-serif; /* 폰트 적용 */
+            font-family: 'Jua', sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -29,25 +29,40 @@
             overflow: hidden;
         }
 
-        /* 상단/하단 체크무늬 장식 (이미지 스타일 반영) */
+        /* 상단/하단 체크무늬 장식 */
         .deco-bar {
             position: absolute;
             left: 0;
             width: 100%;
-            height: 40px;
+            
+            /* [수정 1] 높이를 화면의 25%(1/4)로 설정 */
+            height: 20vh; 
+            
             background-image: linear-gradient(90deg, var(--point-color) 50%, transparent 50%),
                               linear-gradient(var(--point-color) 50%, transparent 50%);
-            background-size: 40px 40px;
+            
+            /* [수정 2] 영역이 커진 만큼 무늬 크기도 80px로 확대 */
+            background-size: 80px 80px; 
             opacity: 0.6;
+            
+            /* 텍스트 뒤로 가도록 설정 (화면이 작을 때 글씨 가림 방지) */
+            z-index: 0;
         }
+
         .top { top: 0; }
-        .bottom { bottom: 0; }
+        
+        .bottom { 
+            bottom: 0; 
+            /* 아래쪽 무늬 반전 (180도 회전) */
+            transform: rotate(180deg); 
+        }
 
         /* 메인 컨텐츠 영역 */
         .container {
             text-align: center;
             width: 100%;
-            z-index: 1;
+            z-index: 1; /* 체크무늬보다 위에 오도록 설정 */
+            position: relative;
         }
 
         h1 {
@@ -57,10 +72,10 @@
             text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
         }
 
-        /* 80% 너비 버튼 스타일 */
+        /* 버튼 스타일 */
         .copy-btn {
             width: 80%;
-            max-width: 500px; /* 너무 커지지 않게 제한 */
+            max-width: 500px;
             padding: 20px 0;
             font-family: 'Jua', sans-serif;
             font-size: 1.8rem;
@@ -101,7 +116,7 @@
         #toast.show {
             visibility: visible;
             opacity: 1;
-            bottom: 80px; /* 살짝 위로 떠오르는 효과 */
+            bottom: 27vh; /* 체크무늬 위쪽으로 살짝 올라오게 위치 조정 */
         }
     </style>
 </head>
@@ -122,7 +137,6 @@
         function copyAccount() {
             const accountNumber = '농협 217063-5207-4455';
 
-            // 클립보드 복사
             navigator.clipboard.writeText(accountNumber).then(() => {
                 showToast();
             }).catch(err => {
@@ -133,11 +147,7 @@
 
         function showToast() {
             const toast = document.getElementById("toast");
-            
-            // 토스트 보이기 클래스 추가
             toast.className = "show";
-
-            // 3초 후 토스트 사라지게 함
             setTimeout(function(){ 
                 toast.className = toast.className.replace("show", ""); 
             }, 3000);
